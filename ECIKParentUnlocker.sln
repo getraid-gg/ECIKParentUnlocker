@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.572
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECIKParentUnlocker", "ECIKParentUnlocker\ECIKParentUnlocker.csproj", "{ECA6015F-FBF0-4BFD-B7F6-E58A505EE910}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ECA6015F-FBF0-4BFD-B7F6-E58A505EE910}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECA6015F-FBF0-4BFD-B7F6-E58A505EE910}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECA6015F-FBF0-4BFD-B7F6-E58A505EE910}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECA6015F-FBF0-4BFD-B7F6-E58A505EE910}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2362F2CC-2518-4104-982B-03B9F6AD8C49}
+	EndGlobalSection
+EndGlobal
