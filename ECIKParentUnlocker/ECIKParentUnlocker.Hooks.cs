@@ -160,7 +160,7 @@ namespace ECIKParentUnlocker
 
             instructionEnumerator.Current.labels.Add(branchEndLabel);
             HarmonyUtils.DebugLog($"Branch points to: {instructionEnumerator.Current.opcode.Name}");
-            
+
             do
             {
                 yield return instructionEnumerator.Current;
@@ -190,7 +190,7 @@ namespace ECIKParentUnlocker
             MotionIKUI.IKUIInfo ___infoRightWaist, MotionIKUI.IKUIInfo ___infoRightKnee)
         {
             var motionSettingCanvas = __instance.motionSettingCanvas;
-            
+
             CopyIKParentingButton(___infoRightHand, ___infoBody, IKTargetIndices.Body,
                 motionSettingCanvas, __instance);
             CopyIKParentingButton(___infoRightHand, ___infoLeftShoulder, IKTargetIndices.LeftShoulder,
@@ -243,7 +243,7 @@ namespace ECIKParentUnlocker
             {
                 int ikTargetIndex = (int)Hooks.NonHardcodedIKTargets[i];
                 var area = _ik.areas[ikTargetIndex];
-                var bone = _kinematicCtrl.lstIKBone[i];
+                var bone = _kinematicCtrl.lstIKBone[ikTargetIndex];
                 // The IK targets not hardcoded to have IK parents don't have this method called for them
                 __instance.SetIKParent(_chara, _kinematicCtrl, area.parentCharaID, area.parentArea, ikTargetIndex);
                 // Then we need to call these to make sure everything is set up
