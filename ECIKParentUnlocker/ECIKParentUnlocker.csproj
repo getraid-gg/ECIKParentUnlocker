@@ -39,6 +39,10 @@
       <HintPath>..\..\lib\Emotion Creators\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>..\..\lib\Emotion Creators\Assembly-CSharp-firstpass.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="BepInEx">
       <HintPath>..\..\lib\BepInex\BepInEx.dll</HintPath>
       <Private>False</Private>
@@ -51,8 +55,8 @@
       <HintPath>..\..\lib\BepInex\BepInEx.Preloader.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\..\lib\BepInex\Mono.Cecil.dll</HintPath>
+    <Reference Include="IL">
+      <HintPath>..\..\lib\Emotion Creators\IL.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
