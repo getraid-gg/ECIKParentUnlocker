@@ -253,6 +253,136 @@ namespace ECIKParentUnlocker
         }
     }
 
+    // This patch is really verbose because I tried just doing the part that sets IK up
+    // for the non-standard IK targets in a postfix - it didn't work so I had to make the patch overwrite the original
+    // It also uses private methods with overloads because IK effectors (hands/feet, body, shoulders, hips) and
+    // IK poles ("chains") (elbows and knees) are different classes
+    [HarmonyPatch(typeof(MotionIKUI), "SetParameter",
+        typeof(ChaControl), typeof(Motion.IK), typeof(FullBodyBipedIK), typeof(KinematicCtrl), typeof(int))]
+    internal static class SetParameterPatch
+    {
+        private static readonly MethodInfo SetIKUseEffectorMethod = AccessTools.Method(typeof(MotionIKUI), "SetIKUse",
+            new Type[] { typeof(int), typeof(IKEffector), typeof(bool), typeof(KinematicCtrl), typeof(bool) });
+
+        private static readonly MethodInfo SetIKWeightEffectorMethod = AccessTools.Method(typeof(MotionIKUI), "SetIKWeight",
+            new Type[] { typeof(int), typeof(IKEffector), typeof(bool), typeof(float), typeof(bool) });
+
+        private static readonly MethodInfo SetIKUseChainMethod = AccessTools.Method(typeof(MotionIKUI), "SetIKUse",
+            new Type[] { typeof(int), typeof(FBIKChain), typeof(bool), typeof(KinematicCtrl), typeof(bool) });
+
+        private static readonly MethodInfo SetIKWeightChainMethod = AccessTools.Method(typeof(MotionIKUI), "SetIKWeight",
+            new Type[] { typeof(int), typeof(FBIKChain), typeof(bool), typeof(float), typeof(bool) });
+
+        private static void SetIKUse(MotionIKUI instance, int area, IKEffector effector, bool isOn, KinematicCtrl kinematicCtrl, bool isSave)
+        {
+            SetIKUseEffectorMethod.Invoke(instance, new object[] { area, effector, isOn, kinematicCtrl, isSave });
+        }
+
+        private static void SetIKWeight(MotionIKUI instance, int area, IKEffector effector, bool isOn, float value, bool isSave)
+        {
+            SetIKWeightEffectorMethod.Invoke(instance, new object[] { area, effector, isOn, value, isSave });
+        }
+
+        private static void SetIKUse(MotionIKUI instance, int area, FBIKChain chain, bool isOn, KinematicCtrl kinematicCtrl, bool isSave)
+        {
+            SetIKUseChainMethod.Invoke(instance, new object[] { area, chain, isOn, kinematicCtrl, isSave });
+        }
+
+        private static void SetIKWeight(MotionIKUI instance, int area, FBIKChain chain, bool isOn, float value, bool isSave)
+        {
+            SetIKWeightChainMethod.Invoke(instance, new object[] { area, chain, isOn, value, isSave });
+        }
+
+        private static readonly int[] EffectorIndices = new int[] { (int)KinematicCtrl.IKTargetEN.Body,
+                (int)KinematicCtrl.IKTargetEN.LeftShoulder, (int)KinematicCtrl.IKTargetEN.LeftHand,
+                (int)KinematicCtrl.IKTargetEN.RightShoulder, (int)KinematicCtrl.IKTargetEN.RightHand,
+                (int)KinematicCtrl.IKTargetEN.LeftThigh, (int)KinematicCtrl.IKTargetEN.LeftFoot,
+                (int)KinematicCtrl.IKTargetEN.RightThigh, (int)KinematicCtrl.IKTargetEN.RightFoot };
+
+        private static readonly int[] ChainIndices = new int[] { (int)KinematicCtrl.IKTargetEN.LeftArmChain, (int)KinematicCtrl.IKTargetEN.RightArmChain,
+                (int)KinematicCtrl.IKTargetEN.LeftLegChain, (int)KinematicCtrl.IKTargetEN.RightLegChain };
+
+        static bool Prefix(MotionIKUI __instance, ChaControl _chara, Motion.IK _ik, FullBodyBipedIK _fullBodyIK, KinematicCtrl _kinematicCtrl, int _charaID)
+        {
+            if (_ik == null || _fullBodyIK == null || _kinematicCtrl == null)
+            {
+                return false;
+            }
+            var hEditInstance = Singleton<HEditGlobal>.Instance;
+
+            var nowPartCharaInfo = hEditInstance.nowPartCharaInfo;
+            hEditInstance.nowPartCharaInfo = null;
+            if (_ik.isUse)
+            {
+                _kinematicCtrl.Active(PoseInfo.ModeEN.IK, false);
+            }
+            
+            var effectors = new IKEffector[] { _fullBodyIK.solver.bodyEffector,
+                _fullBodyIK.solver.leftShoulderEffector, _fullBodyIK.solver.leftHandEffector,
+                _fullBodyIK.solver.rightShoulderEffector, _fullBodyIK.solver.rightHandEffector,
+                _fullBodyIK.solver.leftThighEffector, _fullBodyIK.solver.leftFootEffector,
+                _fullBodyIK.solver.rightThighEffector, _fullBodyIK.solver.rightFootEffector };
+
+            var chains = new FBIKChain[] { _fullBodyIK.solver.leftArmChain, _fullBodyIK.solver.rightArmChain,
+                _fullBodyIK.solver.leftLegChain, _fullBodyIK.solver.rightLegChain };
+
+            for (int i = 0; i < EffectorIndices.Length; i++)
+            {
+                var targetIndex = EffectorIndices[i];
+                var effector = effectors[i];
+                var area = _ik.areas[targetIndex];
+                SetIKUse(__instance, targetIndex, effector, area.isUse, _kinematicCtrl, false);
+                SetIKWeight(__instance, targetIndex, effector, area.isUse, area.weight, false);
+                hEditInstance.SetIKParent(_chara, _kinematicCtrl, area.parentCharaID, area.parentArea, targetIndex);
+                hEditInstance.SetIKPos(_kinematicCtrl.lstIKBone[targetIndex].changeAmount, area.amount);
+            }
+
+            for (int i = 0; i < ChainIndices.Length; i++)
+            {
+                var targetIndex = ChainIndices[i];
+                var chain = chains[i];
+                var area = _ik.areas[targetIndex];
+                SetIKUse(__instance, targetIndex, chain, area.isUse, _kinematicCtrl, false);
+                SetIKWeight(__instance, targetIndex, chain, area.isUse, area.weight, false);
+                hEditInstance.SetIKParent(_chara, _kinematicCtrl, area.parentCharaID, area.parentArea, targetIndex);
+                hEditInstance.SetIKPos(_kinematicCtrl.lstIKBone[targetIndex].changeAmount, area.amount);
+            }
+
+            if (!_ik.isUse)
+            {
+                _kinematicCtrl.Active(PoseInfo.ModeEN.None, false);
+            }
+            else if (__instance.CharaInfoData != null && __instance.CharaInfoData.useCharaID != _charaID)
+            {
+                hEditInstance.KinematicCtrlAllVisible(_kinematicCtrl, false);
+            }
+            hEditInstance.nowPartCharaInfo = nowPartCharaInfo;
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(HEditGlobal), "ReleaseIKParent",
+        typeof(ChaControl), typeof(Motion.IK), typeof(KinematicCtrl))]
+    internal static class ReleaseIKParentPatch
+    {
+        static void Postfix(HEditGlobal __instance, ChaControl _chara, Motion.IK _ik, KinematicCtrl _kinematicCtrl)
+        {
+            if (_chara == null || _ik == null || _kinematicCtrl == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < Hooks.NonHardcodedIKTargets.Length; i++)
+            {
+                int ikTargetIndex = (int)Hooks.NonHardcodedIKTargets[i];
+                var area = _ik.areas[ikTargetIndex];
+                area.parentCharaID = -1;
+                area.parentArea = -1;
+                __instance.SetIKParent(_chara, _kinematicCtrl, area.parentCharaID, area.parentArea, ikTargetIndex);
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(HEditGlobal), "ReSetIKParent",
         typeof(ChaControl), typeof(Motion.IK), typeof(KinematicCtrl))]
     internal static class ReSetIKParentPatch
