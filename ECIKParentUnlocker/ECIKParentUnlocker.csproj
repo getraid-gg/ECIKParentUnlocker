@@ -47,14 +47,6 @@
       <HintPath>..\..\lib\BepInex\BepInEx.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="BepInEx.Harmony">
-      <HintPath>..\..\lib\BepInex\BepInEx.Harmony.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="BepInEx.Preloader">
-      <HintPath>..\..\lib\BepInex\BepInEx.Preloader.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="IL">
       <HintPath>..\..\lib\Emotion Creators\IL.dll</HintPath>
       <Private>False</Private>
