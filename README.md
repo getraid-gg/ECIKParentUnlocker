@@ -1,6 +1,8 @@
 # ECIKParentUnlocker
 A plugin for Emotion Creators to allow reparenting any IK target in H nodes
 
+**Scenes that reparent IK targets enabled by this plugin will have incorrect H poses when played without the plugin**
+
 ## Installation
 To install, place ECIKParentUnlocker.dll in your BepInEx plugins directory.
 I recommend putting it in a folder on its own with my name for organization
