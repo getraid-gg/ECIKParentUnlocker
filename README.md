@@ -3,7 +3,7 @@ A plugin for Emotion Creators to allow reparenting any IK target in H nodes
 
 ## Installation
 To install, place ECIKParentUnlocker.dll in your BepInEx plugins directory.
-I recommend putting it in a folder on its own with my name to separate my plugins
+I recommend putting it in a folder on its own with my name for organization
 (the pre-built .zip has the plugin inside that folder).
 
 ## Building
