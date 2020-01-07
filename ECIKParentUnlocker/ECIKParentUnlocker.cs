@@ -1,5 +1,5 @@
 ﻿using BepInEx;
-using Harmony;
+using HarmonyLib;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -11,11 +11,11 @@ namespace ECIKParentUnlocker
     {
         public const string GUID = "com.getraid.ec.ikparentunlocker";
         public const string PluginName = "IK Parent Unlocker";
-        public const string PluginVersion = "1.0.0";
+        public const string PluginVersion = "2.0.0";
 
         private void Awake()
         {
-            var harmony = HarmonyInstance.Create(GUID);
+            var harmony = new Harmony(GUID);
             try
             {
                 harmony.PatchAll(Assembly.GetExecutingAssembly());

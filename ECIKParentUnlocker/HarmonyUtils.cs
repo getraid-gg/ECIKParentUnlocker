@@ -12,7 +12,7 @@ namespace ECIKParentUnlocker
         [Conditional("DEBUG")]
         public static void DebugLog(string message)
         {
-            Harmony.FileLog.Log(message);
+            HarmonyLib.FileLog.Log(message);
         }
     }
 }
